@@ -2,6 +2,14 @@
 
 ## 1. System Design
 
+**Core user actions**
+
+PawPal+ is designed to support these three core user actions:
+
+1. **Add pets and their care tasks** (feedings, walks, medications, appointments, etc.), each with a scheduled time, duration, priority, and frequency (one-time / daily / weekly).
+2. **Manage tasks over time**: mark tasks as complete after finishing them; edit or delete tasks as the pet's routine changes.
+3. **Generate today's schedule**, sorted by time, with warnings for any scheduling conflicts across pets.
+
 **a. Initial design**
 
 - Briefly describe your initial UML design.
