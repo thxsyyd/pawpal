@@ -144,7 +144,7 @@ else:
             except ValueError as e:
                 st.error(str(e))
 
-    # Show current tasks per pet with a "complete" button
+    # Show current tasks per pet with complete / edit / delete actions
     for pet in owner.pets:
         if not pet.tasks:
             continue
@@ -168,6 +168,64 @@ else:
                 if st.button("Delete", key=f"del_{pet.name}_{task.task_id}"):
                     pet.remove_task(task.task_id)
                     st.rerun()
+
+            # Inline edit form (collapsed by default)
+            with st.expander(f"✏️ Edit task #{task.task_id}"):
+                with st.form(f"edit_form_{pet.name}_{task.task_id}"):
+                    new_description = st.text_input(
+                        "Description",
+                        value=task.description,
+                        key=f"edit_desc_{pet.name}_{task.task_id}",
+                    )
+                    ec1, ec2 = st.columns(2)
+                    with ec1:
+                        new_hour = st.number_input(
+                            "Hour",
+                            min_value=0,
+                            max_value=23,
+                            value=task.scheduled_time.hour,
+                            key=f"edit_hr_{pet.name}_{task.task_id}",
+                        )
+                    with ec2:
+                        new_minute = st.number_input(
+                            "Minute",
+                            min_value=0,
+                            max_value=59,
+                            value=task.scheduled_time.minute,
+                            key=f"edit_min_{pet.name}_{task.task_id}",
+                        )
+                    ec3, ec4, ec5 = st.columns(3)
+                    with ec3:
+                        new_duration = st.number_input(
+                            "Duration (min)",
+                            min_value=1,
+                            max_value=240,
+                            value=task.duration_minutes,
+                            key=f"edit_dur_{pet.name}_{task.task_id}",
+                        )
+                    with ec4:
+                        priority_options = ["high", "medium", "low"]
+                        new_priority = st.selectbox(
+                            "Priority",
+                            priority_options,
+                            index=priority_options.index(task.priority.value),
+                            key=f"edit_pri_{pet.name}_{task.task_id}",
+                        )
+                    with ec5:
+                        frequency_options = ["one_time", "daily", "weekly"]
+                        new_frequency = st.selectbox(
+                            "Frequency",
+                            frequency_options,
+                            index=frequency_options.index(task.frequency.value),
+                            key=f"edit_freq_{pet.name}_{task.task_id}",
+                        )
+                    if st.form_submit_button("Save changes"):
+                        task.description = new_description
+                        task.scheduled_time = time(int(new_hour), int(new_minute))
+                        task.duration_minutes = int(new_duration)
+                        task.priority = Priority(new_priority)
+                        task.frequency = Frequency(new_frequency)
+                        st.rerun()
 
 
 # ---------------------------------------------------------------------
